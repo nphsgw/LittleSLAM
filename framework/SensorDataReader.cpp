@@ -16,47 +16,49 @@
 
 using namespace std;
 
-// ファイルからスキャンを1個読む
 bool SensorDataReader::loadScan(size_t cnt, Scan2D &scan) {
-  bool isScan=false;
-  while (!inFile.eof() && !isScan) {     // スキャンを読むまで続ける
+  bool isScan = false;
+  while (!inFile.eof() && !isScan) {  // スキャンを読むまで続ける
+    // 1スキャン分の読み込みに成功したらisScanがtrueになりループを抜ける
     isScan = loadLaserScan(cnt, scan);
   }
 
-  if (isScan) 
-    return(false);                       // まだファイルが続くという意味
+  if (isScan)
+    return (false);  // まだファイルが続くという意味
   else
-    return(true);                        // ファイルが終わったという意味
+    return (true);  // ファイルが終わったという意味
 }
 
 //////////////
 
-// ファイルから項目1個を読む。読んだ項目がスキャンならtrueを返す。
 bool SensorDataReader::loadLaserScan(size_t cnt, Scan2D &scan) {
-  string type;                           // ファイル内の項目ラベル
+  string type;  // ファイル内の項目ラベル
   inFile >> type;
-  if (type == "LASERSCAN") {             // スキャンの場合
-    scan.setSid(cnt);
+  if (type == "LASERSCAN") {  // スキャンの場合
+    scan.setSid(cnt);         //スキャンIDをセット
 
+    // スキャンID、タイムスタンプを読み込む
     int sid, sec, nsec;
-    inFile >> sid >> sec >> nsec;        // これらは使わない
+    inFile >> sid >> sec >> nsec;  // これらは使わない
 
     vector<LPoint2D> lps;
-    int pnum;                            // スキャン点数
+    int pnum;  // スキャン点数
     inFile >> pnum;
+    // スキャン点数の容量を確保する
     lps.reserve(pnum);
-    for (int i=0; i<pnum; i++) {
+    for (int i = 0; i < pnum; i++) {
       float angle, range;
-      inFile >> angle >> range;          // スキャン点の方位と距離
-      angle += angleOffset;              // レーザスキャナの方向オフセットを考慮
+      inFile >> angle >> range;  // スキャン点の方位と距離
+      // Lidarの座標系をロボットの座標系に合わせる
+      angle += angleOffset;  // レーザスキャナの方向オフセットを考慮
       if (range <= Scan2D::MIN_SCAN_RANGE || range >= Scan2D::MAX_SCAN_RANGE) {
-//      if (range <= Scan2D::MIN_SCAN_RANGE || range >= 3.5) {         // わざと退化を起こしやすく
+        //      if (range <= Scan2D::MIN_SCAN_RANGE || range >= 3.5) {         // わざと退化を起こしやすく
         continue;
       }
 
       LPoint2D lp;
-      lp.setSid(cnt);                    // スキャン番号はcnt（通し番号）にする
-      lp.calXY(range, angle);            // angle,rangeから点の位置xyを計算
+      lp.setSid(cnt);          // スキャン番号はcnt（通し番号）にする
+      lp.calXY(range, angle);  // angle,rangeから点の位置xyを計算
       lps.emplace_back(lp);
     }
     scan.setLps(lps);
@@ -66,15 +68,14 @@ bool SensorDataReader::loadLaserScan(size_t cnt, Scan2D &scan) {
     inFile >> pose.tx >> pose.ty;
     double th;
     inFile >> th;
-    pose.setAngle(RAD2DEG(th));          // オドメトリ角度はラジアンなので度にする
-    pose.calRmat();
+    pose.setAngle(RAD2DEG(th));  // オドメトリ角度はラジアンなので度にする
+    pose.calRmat();              // 姿勢の回転行列
 
-    return(true);
-  }
-  else {                                 // スキャン以外の場合
+    return (true);
+  } else {  // スキャン以外の場合
     string line;
-    getline(inFile, line);               // 読み飛ばす
+    getline(inFile, line);  // 読み飛ばす
 
-    return(false);
+    return (false);
   }
 }

@@ -15,22 +15,21 @@
 #ifndef _POSE2D_H_
 #define _POSE2D_H_
 
-#include "MyUtil.h"
 #include "LPoint2D.h"
+#include "MyUtil.h"
 
 /////////
 
-struct Pose2D
-{
-  double tx;                           // 並進x
-  double ty;                           // 並進y
-  double th;                           // 回転角(度)
-  double Rmat[2][2];                   // 姿勢の回転行列
+struct Pose2D {
+  double tx;          // 並進x
+  double ty;          // 並進y
+  double th;          // 回転角(度)
+  double Rmat[2][2];  // 姿勢の回転行列
 
   Pose2D() : tx(0), ty(0), th(0) {
-    for(int i=0;i<2;i++) {
-      for(int j=0;j<2;j++) {
-        Rmat[i][j] = (i==j)? 1.0:0.0;
+    for (int i = 0; i < 2; i++) {
+      for (int j = 0; j < 2; j++) {
+        Rmat[i][j] = (i == j) ? 1.0 : 0.0;
       }
     }
   }
@@ -43,8 +42,8 @@ struct Pose2D
   }
 
   Pose2D(double mat[2][2], double tx, double ty, double th) {
-    for(int i=0;i<2;i++) {
-      for(int j=0;j<2;j++) {
+    for (int i = 0; i < 2; i++) {
+      for (int j = 0; j < 2; j++) {
         Rmat[i][j] = mat[i][j];
       }
     }
@@ -53,7 +52,7 @@ struct Pose2D
     this->th = th;
   }
 
-/////////////////
+  /////////////////
 
   void reset() {
     tx = ty = th = 0;
@@ -67,6 +66,10 @@ struct Pose2D
     calRmat();
   }
 
+  /**
+   * @brief ロボットの移動量算出に使う回転行列
+   *
+   */
   void calRmat() {
     double a = DEG2RAD(th);
     Rmat[0][0] = Rmat[1][1] = cos(a);
@@ -79,30 +82,32 @@ struct Pose2D
     this->ty = ty;
   }
 
-  void setAngle(double th) {
-    this->th = th;
-  }
+  void setAngle(double th) { this->th = th; }
 
-///////////
+  ///////////
 
   LPoint2D relativePoint(const LPoint2D &p) const;
   LPoint2D globalPoint(const LPoint2D &p) const;
   void globalPoint(const LPoint2D &pi, LPoint2D &po) const;
 
+  /**
+   * @brief 基準姿勢と現在姿勢の相対姿勢を算出する
+   *
+   * @param[in] npose  現在姿勢
+   * @param[in,out] bpose 基準姿勢（1つ前の姿勢）
+   * @param relPose 相対姿勢
+   */
   static void calRelativePose(const Pose2D &npose, const Pose2D &bpose, Pose2D &relPose);
   static void calGlobalPose(const Pose2D &relPose, const Pose2D &bpose, Pose2D &npose);
-  
 };
 
 ///////
 
-struct PoseCov
-{
+struct PoseCov {
   Pose2D pose;
   Eigen::Matrix3d cov;
 
-  PoseCov() {
-  }
+  PoseCov() {}
 
   PoseCov(Pose2D &p, Eigen::Matrix3d &c) {
     pose = p;

@@ -15,52 +15,61 @@
 #ifndef SENSOR_DATA_READER_H_
 #define SENSOR_DATA_READER_H_
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 #include <vector>
-#include "MyUtil.h"
+
 #include "LPoint2D.h"
+#include "MyUtil.h"
 #include "Pose2D.h"
 #include "Scan2D.h"
 
 /////////
 
-class SensorDataReader
-{
-private:
-  int angleOffset;                      // レーザスキャナとロボットの向きのオフセット
-  std::ifstream inFile;                 // データファイル
+class SensorDataReader {
+ private:
+  int angleOffset;       // レーザスキャナとロボットの向きのオフセット
+  std::ifstream inFile;  // データファイル
 
-public:
-  SensorDataReader() : angleOffset(180) {
-  }
+ public:
+  SensorDataReader() : angleOffset(180) {}
 
-  ~SensorDataReader() {
-  }
+  ~SensorDataReader() {}
 
-////////
+  ////////
 
   bool openScanFile(const char *filepath) {
     inFile.open(filepath);
     if (!inFile.is_open()) {
       std::cerr << "Error: cannot open file " << filepath << std::endl;
-      return(false);
+      return (false);
     }
 
-    return(true);
+    return (true);
   }
 
-  void closeScanFile() {
-    inFile.close();
-  }
+  void closeScanFile() { inFile.close(); }
 
-  void setAngleOffset(int o) {
-     angleOffset = o;
-  }
+  void setAngleOffset(int o) { angleOffset = o; }
 
-//////////
-
+  //////////
+  /**
+   * @brief ファイルからスキャンを1個読む
+   *
+   * @param[in] cnt ロードするスキャンID
+   * @param[out] scan ロードしたスキャンデータの保存先
+   * @return true ロード成功
+   * @return false  ロード失敗
+   */
   bool loadScan(size_t cnt, Scan2D &scan);
+  /**
+   * @brief ファイルから項目1個を読む。読んだ項目がスキャンならtrueを返す。
+   *
+   * @param cnt
+   * @param scan
+   * @return true
+   * @return false
+   */
   bool loadLaserScan(size_t cnt, Scan2D &scan);
 };
 
