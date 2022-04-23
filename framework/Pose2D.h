@@ -20,7 +20,20 @@
 
 /////////
 
+/**
+ * @brief ある時刻における移動量、回転行列とそれを用いた変換関数を持つ
+ *
+ */
 struct Pose2D {
+  /*
+  @note
+  Poseクラスはある時刻に基準座標系上での物体の姿勢を保持する。
+  例.
+  時刻tに基準座標系上にAという物体があると仮定する。物体Aはロボットで正面方向x軸の正、正面から見て左方向がy軸の正となる座標系を持つ。
+  並進x,yは基準座標系原点からの物体Aまでのx座標とy座標の移動量。
+  thは基準座標系のx軸に対してロボット座標x軸がどれだけ傾いているかを示す角度。
+  回転行列はこの姿勢をもとに隣り合う時刻間で座標変換するための行列。
+  */
   double tx;          // 並進x
   double ty;          // 並進y
   double th;          // 回転角(度)
@@ -94,10 +107,17 @@ struct Pose2D {
    * @brief 基準姿勢と現在姿勢の相対姿勢を算出する
    *
    * @param[in] npose  現在姿勢
-   * @param[in,out] bpose 基準姿勢（1つ前の姿勢）
-   * @param relPose 相対姿勢
+   * @param[in] bpose 基準姿勢（1つ前の時刻での姿勢）
+   * @param[out] relPose 相対姿勢
    */
   static void calRelativePose(const Pose2D &npose, const Pose2D &bpose, Pose2D &relPose);
+  /**
+   * @brief 基準姿勢から相対姿勢だけ進んだ予測姿勢を算出する。
+   *
+   * @param[in] relPose 相対姿勢
+   * @param[in] bpose 基準姿勢
+   * @param[out] npose 予測姿勢
+   */
   static void calGlobalPose(const Pose2D &relPose, const Pose2D &bpose, Pose2D &npose);
 };
 

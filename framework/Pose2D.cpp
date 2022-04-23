@@ -34,7 +34,8 @@ LPoint2D Pose2D::globalPoint(const LPoint2D &p) const {
 
 // 自分（Pose2D）の局所座標系での点pを、グローバル座標系に変換してpoに入れる
 void Pose2D::globalPoint(const LPoint2D &pi, LPoint2D &po) const {
-  printf("tx=%f,ty=%f\n", tx, ty);
+  //@note tx,ty,Rmatは呼び出し元のPose2D型オブフェクトが保持するメンバー変数が呼び出される。
+  //      具体的にはcalRelativePose()で算出されrelPoseに格納されたもの。
   po.x = Rmat[0][0] * pi.x + Rmat[0][1] * pi.y + tx;
   po.y = Rmat[1][0] * pi.x + Rmat[1][1] * pi.y + ty;
 }
@@ -53,6 +54,7 @@ void Pose2D::calRelativePose(const Pose2D &npose, const Pose2D &bpose, Pose2D &r
   double dx = npose.tx - bpose.tx;
   double dy = npose.ty - bpose.ty;
   relPose.tx = R0[0][0] * dx + R0[1][0] * dy;
+  // R0[0][1]が-sinθであることに注意
   relPose.ty = R0[0][1] * dx + R0[1][1] * dy;
 
   // 回転φ
@@ -75,6 +77,7 @@ void Pose2D::calGlobalPose(const Pose2D &relPose, const Pose2D &bpose, Pose2D &n
   // 並進
   double tx = relPose.tx;
   double ty = relPose.ty;
+
   npose.tx = R0[0][0] * tx + R0[0][1] * ty + bpose.tx;
   npose.ty = R0[1][0] * tx + R0[1][1] * ty + bpose.ty;
 

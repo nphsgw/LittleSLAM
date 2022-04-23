@@ -66,6 +66,7 @@ bool SensorDataReader::loadLaserScan(size_t cnt, Scan2D &scan) {
     // スキャンに対応するオドメトリ情報
     Pose2D &pose = scan.pose;
     inFile >> pose.tx >> pose.ty;
+    printf("Get odom: (tx,ty)=(%f,%f)\n", pose.tx, pose.ty);
     double th;
     inFile >> th;
     pose.setAngle(RAD2DEG(th));  // オドメトリ角度はラジアンなので度にする

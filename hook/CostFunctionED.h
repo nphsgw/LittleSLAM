@@ -17,15 +17,20 @@
 
 #include "CostFunction.h"
 
-class CostFunctionED : public CostFunction
-{
-public:
-  CostFunctionED() {
-  }
+class CostFunctionED : public CostFunction {
+ public:
+  CostFunctionED() {}
 
-  ~CostFunctionED() {
-  }
+  ~CostFunctionED() {}
 
+  /**
+   * @brief 各点間距離の2乗平均を求める
+   *
+   * @param tx
+   * @param ty
+   * @param th
+   * @return double
+   */
   virtual double calValue(double tx, double ty, double th);
 };
 
