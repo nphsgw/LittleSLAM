@@ -164,7 +164,9 @@ void SlamLauncher::customizeFramework() {
   fcustom.makeFramework();
   //  fcustom.customizeG();                         // 退化の対処をしない
   //  fcustom.customizeH();                         // 退化の対処をする
+  // @note カスタマイズの種類はA~Iまで存在する。呼び出し方は以下のようにする。
   fcustom.customizeI();  // ループ閉じ込みをする
+  // fcustom.customizeA;
 
   pcmap = fcustom.getPointCloudMap();  // customizeの後にやること
 }

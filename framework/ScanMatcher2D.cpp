@@ -25,10 +25,14 @@ bool ScanMatcher2D::matchScan(Scan2D &curScan) {
   printf("----- ScanMatcher2D: cnt=%d start -----\n", cnt);
 
   // spresが設定されていれば、スキャン点間隔を均一化する
-  if (spres != nullptr) spres->resamplePoints(&curScan);
+  if (spres != nullptr) {
+    spres->resamplePoints(&curScan);
+  }
 
   // spanaが設定されていれば、スキャン点の法線を計算する
-  if (spana != nullptr) spana->analysePoints(curScan.lps);
+  if (spana != nullptr) {
+    spana->analysePoints(curScan.lps);
+  }
 
   // 最初のスキャンは単に地図に入れるだけ
   if (cnt == 0) {
